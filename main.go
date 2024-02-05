@@ -64,9 +64,15 @@ func main() {
 
 
 	v1Router := chi.NewRouter()
+	// API Checkers
 	v1Router.Get("/status", handlerReadiness)
 	v1Router.Get("/error", handleError)
+	// User routes are under /v1/feeds
 	v1Router.Post("/users", apiCfg.handleCreatUser)
+	v1Router.Get("/users", apiCfg.middlewareAuth(apiCfg.handlerGetUser))
+	// Feed routes are under /v1/feeds
+	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handleCreatFeed))
+	v1Router.Get("/feeds", apiCfg.handleGetFeeds)
 
 	router.Mount("/v1", v1Router)
 	// GET : /v1/status  => Should return 200 with empty JSON response
