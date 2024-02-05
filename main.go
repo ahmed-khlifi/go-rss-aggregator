@@ -1,15 +1,23 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/ahmed-khlifi/go-rss-aggregator/internal/database"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+
+	_ "github.com/lib/pq"
 )
+
+type apiConfig struct {
+	DB *database.Queries
+}
 
 func main() {
 	fmt.Println("Hello, World!")
@@ -22,6 +30,21 @@ func main() {
 		log.Fatal("PORT environment variable not set")
 	}
 
+	db := os.Getenv("DB_URL")
+	if db == "" {
+		// log.Fatal will print the error and then call os.Exit(1)
+		log.Fatal("Database conection URL is not set")
+	}
+
+
+	conn, err := sql.Open("postgres", db)
+	if err != nil {
+		log.Fatal("Can't connect to the database:",err)
+	}
+
+	apiCfg := apiConfig{
+		DB:  database.New(conn),
+	}
 	// `router := chi.NewRouter()` is creating a new instance of a router from the `chi` package. This
 	// router will be used to define the routes and handle the incoming HTTP requests.
 	router := chi.NewRouter()
@@ -43,6 +66,7 @@ func main() {
 	v1Router := chi.NewRouter()
 	v1Router.Get("/status", handlerReadiness)
 	v1Router.Get("/error", handleError)
+	v1Router.Post("/users", apiCfg.handleCreatUser)
 
 	router.Mount("/v1", v1Router)
 	// GET : /v1/status  => Should return 200 with empty JSON response
@@ -57,7 +81,7 @@ func main() {
 	// The code `err := srv.ListenAndServe()` is starting the HTTP server and listening for incoming
 	// requests. If there is an error starting the server, it will be assigned to the `err` variable.
 	fmt.Printf("Server is listening on port %s", portString)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
