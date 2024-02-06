@@ -73,6 +73,10 @@ func main() {
 	// Feed routes are under /v1/feeds
 	v1Router.Post("/feeds", apiCfg.middlewareAuth(apiCfg.handleCreatFeed))
 	v1Router.Get("/feeds", apiCfg.handleGetFeeds)
+	// Feed follow routes are under /v1/feed_follows
+	v1Router.Post("/feed_follows", apiCfg.middlewareAuth(apiCfg.handleCreatFeedFollow))
+	v1Router.Get("/feed_follows", apiCfg.middlewareAuth(apiCfg.handleGetFeedsFollow))
+	v1Router.Delete("/feed_follows/{feedFollowID}", apiCfg.middlewareAuth(apiCfg.handleDeleteFeedsFollow))
 
 	router.Mount("/v1", v1Router)
 	// GET : /v1/status  => Should return 200 with empty JSON response
