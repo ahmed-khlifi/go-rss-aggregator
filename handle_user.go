@@ -43,3 +43,18 @@ func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request, 
 	respondWithJSON(w, http.StatusOK, user)
 }
 
+
+ 
+func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	posts, err := apiCfg.DB.GetPostsForUser(r.Context(), database.GetPostsForUserParams{
+		UserID: user.ID,
+		Limit: 10,
+	})
+	if err != nil {
+		responseWithError(w, http.StatusNotFound, "No posts found for this user")
+		return
+	}
+	respondWithJSON(w, http.StatusOK, posts)
+	return // Add this line
+}
+
