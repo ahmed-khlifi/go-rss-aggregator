@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/ahmed-khlifi/go-rss-aggregator/internal/database"
 	"github.com/go-chi/chi"
@@ -20,8 +21,12 @@ type apiConfig struct {
 }
 
 func main() {
-	fmt.Println("Hello, World!")
-
+	feed, err := urlToFeed("https://wagslane.dev/index.xml")
+	if err !=  nil {
+		log.Fatal(err)
+	}
+	fmt.Println(feed)
+	
 	// Get the value of the PORT environment variable
 	godotenv.Load()
 	portString := os.Getenv("PORT")
@@ -41,10 +46,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Can't connect to the database:",err)
 	}
-
+	
+	dbc :=  database.New(conn)
 	apiCfg := apiConfig{
-		DB:  database.New(conn),
+		DB:  dbc,
 	}
+
+	go startScraping(dbc, 10, time.Minute) // Start scraping every 10 seconds for new posts with a delay of 5
+
 	// `router := chi.NewRouter()` is creating a new instance of a router from the `chi` package. This
 	// router will be used to define the routes and handle the incoming HTTP requests.
 	router := chi.NewRouter()
