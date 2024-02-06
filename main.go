@@ -21,11 +21,7 @@ type apiConfig struct {
 }
 
 func main() {
-	feed, err := urlToFeed("https://wagslane.dev/index.xml")
-	if err !=  nil {
-		log.Fatal(err)
-	}
-	fmt.Println(feed)
+ 
 	
 	// Get the value of the PORT environment variable
 	godotenv.Load()
@@ -52,7 +48,7 @@ func main() {
 		DB:  dbc,
 	}
 
-	go startScraping(dbc, 10, time.Minute) // Start scraping every 10 seconds for new posts with a delay of 5
+	go startScraping(dbc, 10, time.Second * 5) // Start scraping every 10 seconds for new posts with a delay of 5
 
 	// `router := chi.NewRouter()` is creating a new instance of a router from the `chi` package. This
 	// router will be used to define the routes and handle the incoming HTTP requests.
