@@ -33,6 +33,8 @@ run `go run .`
 
 run `go build`
 
+## DB
+
 To run the migration in this file, go to sql/schema & run :
 
 ```
