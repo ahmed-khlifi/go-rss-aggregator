@@ -65,15 +65,20 @@ func scrapeFeed(db *database.Queries,
 			continue
 		}
 
+		url := sql.NullString{
+			String: item.Link,
+			Valid:  true,
+		}
+
 		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
-			ID: uuid.New(),
-			CreatedAt: time.Now().UTC(),
-			UpdatedAt: time.Now().UTC(),
-			Title: item.Title,
+			ID:         uuid.New(),
+			CreatedAt:  time.Now().UTC(),
+			UpdatedAt:  time.Now().UTC(),
+			Title:      item.Title,
 			Description: description,
 			PublishedAt: publishTime,
-			Url: item.Link,
-			FeedID: feed.ID,
+			Url:        url,
+			FeedID:     feed.ID,
 		})
 		if err != nil {
 			if strings.Contains(err.Error(), "Duplicate entry") {
