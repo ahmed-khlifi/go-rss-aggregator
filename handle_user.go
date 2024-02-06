@@ -55,6 +55,6 @@ func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.R
 		return
 	}
 	respondWithJSON(w, http.StatusOK, posts)
-	return // Add this line
+
 }
 
