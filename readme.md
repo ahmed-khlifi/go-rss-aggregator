@@ -36,7 +36,7 @@ run `go build`
 To run the migration in this file, go to sql/schema & run :
 
 ```
-goose {connection link} up
+goose postgres {connection link} up
 ```
 
 Generate queries, In home folder Run :
